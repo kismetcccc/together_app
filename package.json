@@ -1,0 +1,19 @@
+{
+  "name": "together-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix backend ci && npm --prefix mobile ci",
+    "dev:api": "npm --prefix backend run dev",
+    "dev:app": "npm --prefix mobile start",
+    "verify": "npm --prefix backend run build && npm --prefix backend test && npm --prefix mobile run typecheck && npm --prefix mobile test",
+    "export:app": "npm --prefix mobile run export",
+    "format": "prettier --write ."
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

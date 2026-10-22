@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><meta name="referrer" content="no-referrer" /><title>
+    同频 · 在 App 中继续</title
+  ><style>
+    body {
+      font-family: system-ui;
+      background: #f7f7f0;
+      color: #223e35;
+      max-width: 520px;
+      margin: 10vh auto;
+      padding: 24px;
+      line-height: 1.8;
+    }
+    a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #223e35;
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+    }
+    p {
+      color: #66766a;
+    }
+  </style>
+  <h1>∞ 同频 Together</h1>
+  <h2>把故事，连接起来。</h2>
+  <p>
+    请使用 Android 或 iOS 同频 App 继续。你也可以复制当前页面完整网址，在 App
+    的「打开邀请 / 验证链接」中粘贴。
+  </p>
+  <a id="open" hidden>在同频 App 中打开</a>
+  <p id="message">已安装 App 后，请使用邮件中的完整链接。</p>
+  <script>
+    const m = /^#\/(invite|verify|reset)\/([A-Za-z0-9_-]{43})\/?$/.exec(
+      location.hash,
+    );
+    if (m) {
+      const a = document.getElementById("open");
+      a.href = "together://" + m[1] + "/" + m[2];
+      a.hidden = false;
+      document.getElementById("message").textContent =
+        "点击打开 App 后，请确认操作。此页面不会自动验证、接受邀请或更改密码。";
+    }
+  </script>
+</html>

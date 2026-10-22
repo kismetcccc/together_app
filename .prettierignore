@@ -1,0 +1,9 @@
+node_modules
+dist
+.expo
+.data
+.env*
+*.local.json
+package-lock.json
+backend/package-lock.json
+mobile/package-lock.json

@@ -1,0 +1,30 @@
+name: Verify native app and API
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            mobile/package-lock.json
+      - run: npm ci
+      - run: npm run install:all
+      - run: npm run verify
+      - run: npm --prefix backend test
+        env:
+          TEST_DATABASE: postgres
+      - run: npm run export:app
+        env:
+          EXPO_PUBLIC_API_URL: https://example.invalid/api/v1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-js-export-not-installable
+          path: mobile/dist
