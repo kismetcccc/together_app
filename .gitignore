@@ -20,3 +20,4 @@ android/
 ios/
 *.local.json
 *.local.mjs
+*.local.cjs

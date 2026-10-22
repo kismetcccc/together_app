@@ -34,6 +34,7 @@ import type {
   Snapshot,
   InvitationResult,
 } from "./types";
+import { MemoryArtwork } from "./components/MemoryArtwork";
 import { AuthScreen } from "./components/AuthScreen";
 import { PrivateImage } from "./components/PrivateImage";
 import {
@@ -307,7 +308,16 @@ function Root() {
         {busy ? (
           <ActivityIndicator color={colors.ink} />
         ) : (
-          <Text style={s.small}>只与在意的人分享</Text>
+          <View
+            style={{
+              backgroundColor: colors.soft,
+              paddingHorizontal: 12,
+              paddingVertical: 7,
+              borderRadius: 20,
+            }}
+          >
+            <Text style={{ fontSize: 11, color: colors.ink }}>♡ 私享时光</Text>
+          </View>
         )}
       </View>
       {!sheet && !!error && (
@@ -391,28 +401,53 @@ function Root() {
           )}
           {tab === "相册" && !selectedAlbum && (
             <Screen refreshControl={refreshControl}>
-              <Label>OUR LITTLE COLLECTION</Label>
-              <Heading>一起收藏的日子</Heading>
-              <Body>
-                你好，{data.user.name}
-                。有些瞬间，一个人记得是回忆，一起记得，就成了故事。
-              </Body>
-              <Card tone={colors.soft}>
-                <Text style={{ fontSize: 40, color: colors.ink }}>♡</Text>
-                <Text style={s.title}>为重要的人，留一个位置。</Text>
-                <View style={s.row}>
-                  <Text style={s.title}>{data.albums.length} 本相册</Text>
-                  <Body>
-                    · {data.albums.reduce((n, a) => n + a.photos.length, 0)}{" "}
-                    个瞬间
-                  </Body>
+              <View style={{ gap: 6 }}>
+                <Label>你好，{data.user.name} · 欢迎回来</Label>
+                <Heading>让日常，值得珍藏。</Heading>
+                <Body>和喜欢的人，慢慢收集生活。</Body>
+              </View>
+              <View
+                style={{
+                  backgroundColor: colors.ink,
+                  borderRadius: 28,
+                  overflow: "hidden",
+                }}
+              >
+                <MemoryArtwork compact />
+                <View style={{ padding: 22, paddingTop: 8, gap: 12 }}>
+                  <Text
+                    style={{
+                      fontSize: 22,
+                      fontWeight: "600",
+                      color: "#FFF9F4",
+                    }}
+                  >
+                    我们的故事，未完待续。
+                  </Text>
+                  <Text style={{ fontSize: 13, color: "#CFC3D6" }}>
+                    {" "}
+                    {data.albums.length} 本相册 ·{" "}
+                    {data.albums.reduce((n, a) => n + a.photos.length, 0)}{" "}
+                    个珍贵瞬间
+                  </Text>
+                  <Button
+                    secondary
+                    title="＋ 开启一本新相册"
+                    disabled={!data.user.emailVerified || busy}
+                    onPress={() => open({ kind: "album" })}
+                  />
                 </View>
-                <Button
-                  title="＋ 创建我们的相册"
-                  disabled={!data.user.emailVerified || busy}
-                  onPress={() => open({ kind: "album" })}
-                />
-              </Card>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={s.title}>回忆收藏夹</Text>
+                <Text style={s.small}>只分享给重要的人</Text>
+              </View>
               <Chips
                 values={["全部", ...categories]}
                 value={category}
@@ -438,7 +473,11 @@ function Root() {
                     onPress={() => setSelected(album.id)}
                   >
                     <Card>
-                      <PrivateImage path={album.cover} label={album.title} />
+                      <PrivateImage
+                        path={album.cover}
+                        label={album.title}
+                        height={190}
+                      />
                       <Label>
                         {album.category} ·{" "}
                         {album.role === "owner" ? "我的相册" : "共同收藏"}
@@ -470,7 +509,7 @@ function Root() {
                 title="‹ 所有相册"
                 onPress={() => setSelected(null)}
               />
-              <Label>{selectedAlbum.category} · OUR SHARED STORY</Label>
+              <Label>{selectedAlbum.category} / 我们的共同记忆</Label>
               <Heading>{selectedAlbum.title}</Heading>
               <Body>
                 {selectedAlbum.description || "把平凡的日子，过成一起的故事。"}
@@ -512,44 +551,67 @@ function Root() {
                   <Body>从手机相册选一张喜欢的照片，故事就开始了。</Body>
                 </Card>
               )}
-              {selectedAlbum.photos.map((photo) => (
-                <Card key={photo.id}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`查看照片 ${photo.caption}`}
-                    onPress={() =>
-                      open({ kind: "photo", album: selectedAlbum, photo })
-                    }
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+                {selectedAlbum.photos.map((photo) => (
+                  <View
+                    key={photo.id}
+                    style={{
+                      width: "48%",
+                      flexGrow: 1,
+                      backgroundColor: colors.paper,
+                      borderRadius: 20,
+                      padding: 8,
+                      gap: 8,
+                    }}
                   >
-                    <PrivateImage
-                      path={photo.url}
-                      label={photo.caption}
-                      height={260}
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`查看照片 ${photo.caption}`}
+                      onPress={() =>
+                        open({ kind: "photo", album: selectedAlbum, photo })
+                      }
+                    >
+                      <PrivateImage
+                        path={photo.url}
+                        label={photo.caption}
+                        height={172}
+                      />
+                    </Pressable>
+                    <Text
+                      numberOfLines={2}
+                      style={{
+                        color: colors.ink,
+                        fontWeight: "600",
+                        fontSize: 14,
+                        lineHeight: 21,
+                        paddingHorizontal: 4,
+                      }}
+                    >
+                      {photo.caption || "无标题瞬间"}
+                    </Text>
+                    <Text style={s.small}>
+                      {photo.date} · {photo.author}
+                    </Text>
+                    <Button
+                      secondary
+                      title={photo.favorite ? "♥ 已收藏" : "♡ 收藏"}
+                      disabled={busy}
+                      onPress={() =>
+                        void work(
+                          async () => {
+                            await api!.editPhoto(selectedAlbum.id, photo, {
+                              favorite: !photo.favorite,
+                            });
+                            await refresh(selectedAlbum.id);
+                          },
+                          "收藏已更新",
+                          false,
+                        )
+                      }
                     />
-                  </Pressable>
-                  <Text style={s.title}>{photo.caption || "无标题瞬间"}</Text>
-                  <Text style={s.small}>
-                    {photo.date} · {photo.author}
-                  </Text>
-                  <Button
-                    secondary
-                    title={photo.favorite ? "♥ 已收藏" : "♡ 收藏这张照片"}
-                    disabled={busy}
-                    onPress={() =>
-                      void work(
-                        async () => {
-                          await api!.editPhoto(selectedAlbum.id, photo, {
-                            favorite: !photo.favorite,
-                          });
-                          await refresh(selectedAlbum.id);
-                        },
-                        "收藏已更新",
-                        false,
-                      )
-                    }
-                  />
-                </Card>
-              ))}
+                  </View>
+                ))}
+              </View>
             </Screen>
           )}
           {tab === "纪念日" && (
@@ -653,7 +715,8 @@ function Root() {
           <View
             style={{
               flexDirection: "row",
-              padding: 12,
+              paddingHorizontal: 24,
+              paddingVertical: 8,
               gap: 10,
               borderTopWidth: 1,
               borderColor: colors.line,
@@ -673,13 +736,22 @@ function Root() {
                 style={{
                   flex: 1,
                   alignItems: "center",
-                  padding: 12,
-                  borderRadius: 16,
-                  backgroundColor: tab === name ? colors.soft : colors.paper,
+                  padding: 8,
+                  minHeight: 52,
+                  borderRadius: 20,
+                  backgroundColor: colors.paper,
                   gap: 4,
                 }}
               >
-                <Text style={{ fontSize: 20, color: colors.ink }}>
+                <Text
+                  style={{
+                    fontSize: 22,
+                    color: tab === name ? colors.ink : colors.muted,
+                    backgroundColor: tab === name ? colors.soft : colors.paper,
+                    paddingHorizontal: 18,
+                    borderRadius: 14,
+                  }}
+                >
                   {["▧", "♡", "○"][index]}
                 </Text>
                 <Text

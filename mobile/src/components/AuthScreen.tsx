@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
+import { MemoryArtwork } from "./MemoryArtwork";
 import {
   Button,
   Card,
@@ -39,19 +40,20 @@ export function AuthScreen({
   }
   return (
     <Screen>
-      <View style={{ paddingTop: 20, gap: 12 }}>
-        <Label>TOGETHER · MADE FOR US</Label>
-        <Heading>把时光，{"\n"}留给我们。</Heading>
-        <Body>
-          恋人、挚友，每一个重要的人。{"\n"}让那些普通的日子，也有一个归处。
-        </Body>
+      <View style={{ gap: 8, alignItems: "center" }}>
+        <MemoryArtwork />
+        <Label>A LITTLE SPACE FOR US</Label>
+        <Heading>喜欢的日子，一起存好。</Heading>
+        <Body>一份私密相册，装下两个人的好时光。</Body>
       </View>
-      <Card tone={colors.soft}>
-        <Text style={{ fontSize: 36 }}>∞</Text>
-        <Text style={s.title}>有你在，就是好天气。</Text>
-        <Body>一个相册，两份视角，无数个一起。</Body>
-      </Card>
-      <View style={{ gap: 16 }}>
+      <View
+        style={{
+          gap: 16,
+          backgroundColor: colors.paper,
+          padding: 22,
+          borderRadius: 28,
+        }}
+      >
         <Text style={s.title}>
           {register ? "开启我们的故事" : "欢迎回到同频"}
         </Text>
@@ -80,11 +82,24 @@ export function AuthScreen({
           autoCapitalize="none"
           autoComplete={register ? "new-password" : "current-password"}
         />
-        <Button
-          secondary
-          title={show ? "隐藏密码" : "显示密码"}
-          onPress={() => setShow(!show)}
-        />
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={show ? "隐藏密码" : "显示密码"}
+            onPress={() => setShow(!show)}
+            style={{ minHeight: 44, justifyContent: "center" }}
+          >
+            <Text style={s.small}>{show ? "隐藏密码" : "显示密码"}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            disabled={busy}
+            onPress={() => onForgot(email)}
+            style={{ minHeight: 44, justifyContent: "center" }}
+          >
+            <Text style={{ color: colors.ink, fontSize: 13 }}>忘记密码？</Text>
+          </Pressable>
+        </View>
         {!!error && (
           <Text accessibilityRole="alert" style={s.error}>
             {error}
@@ -104,13 +119,19 @@ export function AuthScreen({
             setError("");
           }}
         />
-        <Button
-          secondary
-          title="忘记密码"
-          disabled={busy}
-          onPress={() => onForgot(email)}
-        />
-        <Button secondary title="打开邀请 / 验证链接" onPress={onLink} />
+        <Pressable
+          accessibilityRole="button"
+          onPress={onLink}
+          style={{
+            minHeight: 44,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: colors.ink, fontSize: 13 }}>
+            收到好友邀请？打开链接 →
+          </Text>
+        </Pressable>
         <Text style={s.small}>
           请使用本站密码，不是 QQ 密码。注册后需通过邮箱验证，才可上传与分享。
         </Text>

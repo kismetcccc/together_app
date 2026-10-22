@@ -21,3 +21,13 @@
 | 依赖上游修复         | braces / node-forge 补丁及兼容性复测 | 等待可用补丁 |
 
 以上待办不能以 JS 导出或网页测试替代。完整结果与限制见 VERIFICATION.md。
+
+## UI 改版 · 2026-10-22
+
+暖白与深紫配色；原生叠放照片插画；首页主视觉与相册统计；精简登录操作；更紧凑的照片网格与底部导航。插画由 React Native View 绘制，不依赖外部图片、WebView 或新增第三方库。
+
+执行顺序：现状检查 → 公共视觉规范 → 登录/首页/相册/导航 → 类型与回归测试 → 手机尺寸辅助检查 → 提交仓库。全部完成。
+
+验证：npm run verify（后端 13 项 + 客户端 6 项）；Expo Android/iOS/Web 导出通过；辅助预览使用隔离账号登录、打开相册、显示私有图片；390px 与 320px 检查无横向溢出。这仍不是原生真机验收。
+
+新版预览：docs/screenshots/redesign-home.jpg、redesign-album.jpg。
