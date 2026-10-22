@@ -34,7 +34,7 @@ import type {
   Snapshot,
   InvitationResult,
 } from "./types";
-import { MemoryArtwork, SoftGradient } from "./components/MemoryArtwork";
+import { PhotoWall } from "./components/PhotoWall";
 import { AuthScreen } from "./components/AuthScreen";
 import { PrivateImage } from "./components/PrivateImage";
 import {
@@ -81,7 +81,6 @@ function Root() {
   const [tab, setTab] = useState("相册"),
     [selected, setSelected] = useState<string | null>(null),
     [category, setCategory] = useState("全部"),
-    [query, setQuery] = useState(""),
     [sheet, setSheet] = useState<Sheet | null>(null),
     [pending, setPending] = useState<MailLink | null>(null);
   const lock = useRef(false),
@@ -301,23 +300,28 @@ function Root() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style="dark" />
       <View style={s.topbar}>
-        <Text style={s.brand}>
-          ∞ 同频{" "}
-          <Text style={{ fontSize: 11, letterSpacing: 2 }}>TOGETHER</Text>
+        <Text style={{ fontSize: 26, fontWeight: "600", color: "#111" }}>
+          {data.user ? (tab === "相册" ? "照片" : tab) : "同频"}
         </Text>
-        {busy ? (
-          <ActivityIndicator color={colors.ink} />
-        ) : (
-          <View
+        {data.user && tab === "相册" && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="创建相册"
+            accessibilityState={{ disabled: busy || !data.user.emailVerified }}
+            disabled={busy || !data.user.emailVerified}
+            onPress={() => open({ kind: "album" })}
             style={{
-              backgroundColor: colors.soft,
-              paddingHorizontal: 12,
-              paddingVertical: 7,
-              borderRadius: 20,
+              height: 44,
+              width: 44,
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: busy || !data.user.emailVerified ? 0.4 : 1,
             }}
           >
-            <Text style={{ fontSize: 11, color: colors.ink }}>♡ 私享时光</Text>
-          </View>
+            <Text style={{ fontSize: 32, fontWeight: "300", color: "#111" }}>
+              ＋
+            </Text>
+          </Pressable>
         )}
       </View>
       {!sheet && !!error && (
@@ -400,174 +404,13 @@ function Root() {
             </View>
           )}
           {tab === "相册" && !selectedAlbum && (
-            <Screen refreshControl={refreshControl}>
-              <View style={{ gap: 6 }}>
-                <Label>你好，{data.user.name} · 欢迎回来</Label>
-                <Heading>让日常，值得珍藏。</Heading>
-                <Body>和喜欢的人，慢慢收集生活。</Body>
-              </View>
-              <SoftGradient
-                style={{
-                  padding: 24,
-                  minHeight: 225,
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{ fontSize: 10, letterSpacing: 3, color: "#7D708B" }}
-                >
-                  OUR SHARED DAYS
-                </Text>
-                <View style={{ gap: 8, marginVertical: 20 }}>
-                  <Text
-                    style={{
-                      fontSize: 30,
-                      lineHeight: 42,
-                      fontWeight: "300",
-                      color: "#51445F",
-                    }}
-                  >
-                    把每一天，{"\n"}写成我们。
-                  </Text>
-                  <Text style={{ fontSize: 12, color: "#7D708B" }}>
-                    {data.albums.length} 本相册 ·{" "}
-                    {data.albums.reduce((n, a) => n + a.photos.length, 0)}{" "}
-                    个心动瞬间
-                  </Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="创建相册"
-                  disabled={!data.user.emailVerified || busy}
-                  onPress={() => open({ kind: "album" })}
-                  style={{
-                    alignSelf: "flex-start",
-                    backgroundColor: "#FFFFFFB8",
-                    borderRadius: 24,
-                    paddingHorizontal: 20,
-                    minHeight: 44,
-                    justifyContent: "center",
-                    opacity: !data.user.emailVerified || busy ? 0.5 : 1,
-                  }}
-                >
-                  <Text style={{ fontSize: 13, color: "#65517E" }}>
-                    ＋ 记录新的故事
-                  </Text>
-                </Pressable>
-              </SoftGradient>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={s.title}>回忆收藏夹</Text>
-                <Text style={s.small}>只分享给重要的人</Text>
-              </View>
-              <Chips
-                values={["全部", ...categories]}
-                value={category}
-                onChange={setCategory}
-              />
-              <Field
-                label="搜索相册"
-                placeholder="相册名称、故事…"
-                value={query}
-                onChangeText={setQuery}
-              />
-              {data.albums
-                .filter(
-                  (a) =>
-                    (category === "全部" || a.category === category) &&
-                    (a.title + a.description).includes(query),
-                )
-                .map((album) => (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`打开相册 ${album.title}`}
-                    key={album.id}
-                    onPress={() => setSelected(album.id)}
-                  >
-                    <Card>
-                      <SoftGradient
-                        style={{
-                          height: 170,
-                          padding: 20,
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 10,
-                            letterSpacing: 2,
-                            color: "#84718E",
-                          }}
-                        >
-                          TOGETHER / {album.category}
-                        </Text>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "flex-end",
-                            justifyContent: "space-between",
-                            gap: 14,
-                          }}
-                        >
-                          <Text
-                            numberOfLines={2}
-                            style={{
-                              fontSize: 22,
-                              lineHeight: 31,
-                              fontWeight: "400",
-                              color: "#51445F",
-                              flex: 1,
-                            }}
-                          >
-                            {album.title}
-                          </Text>
-                          {!!album.cover && (
-                            <View
-                              style={{
-                                width: 68,
-                                transform: [{ rotate: "6deg" }],
-                                backgroundColor: "#FFFFFFAA",
-                                padding: 4,
-                                borderRadius: 14,
-                              }}
-                            >
-                              <PrivateImage
-                                path={album.cover}
-                                label={album.title}
-                                height={65}
-                              />
-                            </View>
-                          )}
-                        </View>
-                      </SoftGradient>
-                      <Label>
-                        {album.category} ·{" "}
-                        {album.role === "owner" ? "我的相册" : "共同收藏"}
-                      </Label>
-                      <Text style={s.title}>{album.title}</Text>
-                      <Body>
-                        {album.description ||
-                          "从一张照片开始，写下我们的故事。"}
-                      </Body>
-                      <Text style={s.small}>
-                        {album.photos.length} 张照片 ·{" "}
-                        {album.members.filter((m) => !m.pending).length} 位成员
-                      </Text>
-                    </Card>
-                  </Pressable>
-                ))}
-              {data.albums.length === 0 && (
-                <View style={s.empty}>
-                  <Text style={{ fontSize: 40 }}>✧</Text>
-                  <Body>第一本相册，从这里开始。</Body>
-                </View>
-              )}
-            </Screen>
+            <PhotoWall
+              albums={data.albums}
+              category={category}
+              onCategory={setCategory}
+              onAlbum={setSelected}
+              refreshControl={refreshControl}
+            />
           )}
           {tab === "相册" && selectedAlbum && (
             <Screen refreshControl={refreshControl}>

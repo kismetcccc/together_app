@@ -6,10 +6,14 @@ export function PrivateImage({
   path,
   label,
   height = 200,
+  radius = 18,
+  onDimensions,
 }: {
   path: string;
   label: string;
   height?: number;
+  radius?: number;
+  onDimensions?: (width: number, height: number) => void;
 }) {
   const [uri, setUri] = useState(""),
     [failed, setFailed] = useState(false);
@@ -50,9 +54,12 @@ export function PrivateImage({
       style={{
         width: "100%",
         height,
-        borderRadius: 18,
+        borderRadius: radius,
         backgroundColor: colors.soft,
       }}
+      onLoad={(e) =>
+        onDimensions?.(e.nativeEvent.source.width, e.nativeEvent.source.height)
+      }
       resizeMode="cover"
       onError={() => setFailed(true)}
     />
@@ -60,7 +67,7 @@ export function PrivateImage({
     <View
       style={{
         height,
-        borderRadius: 18,
+        borderRadius: radius,
         backgroundColor: colors.soft,
         alignItems: "center",
         justifyContent: "center",

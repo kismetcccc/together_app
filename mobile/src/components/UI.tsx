@@ -12,12 +12,12 @@ import {
   type TextInputProps,
 } from "react-native";
 export const colors = {
-  bg: "#FCFAFD",
+  bg: "#FFFFFF",
   paper: "#ffffff",
-  ink: "#65517E",
-  muted: "#827A86",
-  line: "#EDE7EE",
-  soft: "#EEE8F3",
+  ink: "#191919",
+  muted: "#808080",
+  line: "#EEEEEE",
+  soft: "#F5F5F5",
   rose: "#F5E6E0",
   danger: "#a8453f",
 };
@@ -211,7 +211,7 @@ export const s = StyleSheet.create({
     fontWeight: "500",
   },
   secondary: {
-    backgroundColor: "#F2EDF3",
+    backgroundColor: "#F5F5F5",
     minHeight: 44,
     paddingVertical: 11,
     paddingHorizontal: 14,
@@ -228,7 +228,7 @@ export const s = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 11,
     borderRadius: 30,
-    backgroundColor: "#F0EBF0",
+    backgroundColor: "#F7F7F7",
   },
   title: {
     fontFamily: Platform.select({

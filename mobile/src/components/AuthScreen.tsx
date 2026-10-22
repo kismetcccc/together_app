@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Text, View, Pressable } from "react-native";
-import { MemoryArtwork } from "./MemoryArtwork";
 import {
   Button,
   Card,
@@ -41,8 +40,6 @@ export function AuthScreen({
   return (
     <Screen>
       <View style={{ gap: 8, alignItems: "center" }}>
-        <MemoryArtwork />
-        <Label>A LITTLE SPACE FOR US</Label>
         <Heading>喜欢的日子，一起存好。</Heading>
         <Body>一份私密相册，装下两个人的好时光。</Body>
       </View>
