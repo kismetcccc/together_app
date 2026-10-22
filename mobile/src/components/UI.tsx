@@ -12,9 +12,9 @@ import {
   type TextInputProps,
 } from "react-native";
 export const colors = {
-  bg: "#FAF8F5",
+  bg: "#FCFAFD",
   paper: "#ffffff",
-  ink: "#352A43",
+  ink: "#65517E",
   muted: "#827A86",
   line: "#EDE7EE",
   soft: "#EEE8F3",
@@ -153,20 +153,34 @@ export const s = StyleSheet.create({
     alignSelf: "center",
   },
   heading: {
-    fontSize: 28,
-    lineHeight: 38,
-    fontWeight: "600",
+    fontFamily: Platform.select({
+      ios: "PingFang SC",
+      android: "sans-serif",
+      default: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+    }),
+    fontSize: 25,
+    lineHeight: 35,
+    fontWeight: "500",
     color: colors.ink,
-    letterSpacing: 0.5,
+    letterSpacing: 0,
   },
   label: {
     fontSize: 11,
-    letterSpacing: 2,
+    letterSpacing: 1,
     color: colors.muted,
-    fontWeight: "700",
+    fontWeight: "400",
   },
-  body: { fontSize: 14, lineHeight: 23, color: colors.muted },
-  fieldLabel: { fontSize: 13, color: colors.ink, fontWeight: "600" },
+  body: {
+    fontFamily: Platform.select({
+      ios: "PingFang SC",
+      android: "sans-serif",
+      default: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+    }),
+    fontSize: 14,
+    lineHeight: 23,
+    color: colors.muted,
+  },
+  fieldLabel: { fontSize: 13, color: colors.ink, fontWeight: "500" },
   input: {
     backgroundColor: "white",
     borderColor: colors.line,
@@ -186,7 +200,16 @@ export const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: { color: "white", fontSize: 14, fontWeight: "600" },
+  buttonText: {
+    fontFamily: Platform.select({
+      ios: "PingFang SC",
+      android: "sans-serif",
+      default: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+    }),
+    color: "white",
+    fontSize: 14,
+    fontWeight: "500",
+  },
   secondary: {
     backgroundColor: "#F2EDF3",
     minHeight: 44,
@@ -207,7 +230,16 @@ export const s = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: "#F0EBF0",
   },
-  title: { color: colors.ink, fontSize: 18, fontWeight: "600" },
+  title: {
+    fontFamily: Platform.select({
+      ios: "PingFang SC",
+      android: "sans-serif",
+      default: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+    }),
+    color: colors.ink,
+    fontSize: 17,
+    fontWeight: "500",
+  },
   error: { color: colors.danger, fontSize: 14, lineHeight: 21 },
   small: { color: colors.muted, fontSize: 12, lineHeight: 19 },
   topbar: {
@@ -219,7 +251,7 @@ export const s = StyleSheet.create({
     borderBottomColor: colors.line,
     borderBottomWidth: 0,
   },
-  brand: { fontSize: 20, color: colors.ink, fontWeight: "700" },
+  brand: { fontSize: 19, color: colors.ink, fontWeight: "500" },
   divider: { height: 1, backgroundColor: colors.line },
   empty: { paddingVertical: 36, alignItems: "center", gap: 12 },
 });

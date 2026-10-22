@@ -34,7 +34,7 @@ import type {
   Snapshot,
   InvitationResult,
 } from "./types";
-import { MemoryArtwork } from "./components/MemoryArtwork";
+import { MemoryArtwork, SoftGradient } from "./components/MemoryArtwork";
 import { AuthScreen } from "./components/AuthScreen";
 import { PrivateImage } from "./components/PrivateImage";
 import {
@@ -406,38 +406,55 @@ function Root() {
                 <Heading>让日常，值得珍藏。</Heading>
                 <Body>和喜欢的人，慢慢收集生活。</Body>
               </View>
-              <View
+              <SoftGradient
                 style={{
-                  backgroundColor: colors.ink,
-                  borderRadius: 28,
-                  overflow: "hidden",
+                  padding: 24,
+                  minHeight: 225,
+                  justifyContent: "space-between",
                 }}
               >
-                <MemoryArtwork compact />
-                <View style={{ padding: 22, paddingTop: 8, gap: 12 }}>
+                <Text
+                  style={{ fontSize: 10, letterSpacing: 3, color: "#7D708B" }}
+                >
+                  OUR SHARED DAYS
+                </Text>
+                <View style={{ gap: 8, marginVertical: 20 }}>
                   <Text
                     style={{
-                      fontSize: 22,
-                      fontWeight: "600",
-                      color: "#FFF9F4",
+                      fontSize: 30,
+                      lineHeight: 42,
+                      fontWeight: "300",
+                      color: "#51445F",
                     }}
                   >
-                    我们的故事，未完待续。
+                    把每一天，{"\n"}写成我们。
                   </Text>
-                  <Text style={{ fontSize: 13, color: "#CFC3D6" }}>
-                    {" "}
+                  <Text style={{ fontSize: 12, color: "#7D708B" }}>
                     {data.albums.length} 本相册 ·{" "}
                     {data.albums.reduce((n, a) => n + a.photos.length, 0)}{" "}
-                    个珍贵瞬间
+                    个心动瞬间
                   </Text>
-                  <Button
-                    secondary
-                    title="＋ 开启一本新相册"
-                    disabled={!data.user.emailVerified || busy}
-                    onPress={() => open({ kind: "album" })}
-                  />
                 </View>
-              </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="创建相册"
+                  disabled={!data.user.emailVerified || busy}
+                  onPress={() => open({ kind: "album" })}
+                  style={{
+                    alignSelf: "flex-start",
+                    backgroundColor: "#FFFFFFB8",
+                    borderRadius: 24,
+                    paddingHorizontal: 20,
+                    minHeight: 44,
+                    justifyContent: "center",
+                    opacity: !data.user.emailVerified || busy ? 0.5 : 1,
+                  }}
+                >
+                  <Text style={{ fontSize: 13, color: "#65517E" }}>
+                    ＋ 记录新的故事
+                  </Text>
+                </Pressable>
+              </SoftGradient>
               <View
                 style={{
                   flexDirection: "row",
@@ -473,11 +490,61 @@ function Root() {
                     onPress={() => setSelected(album.id)}
                   >
                     <Card>
-                      <PrivateImage
-                        path={album.cover}
-                        label={album.title}
-                        height={190}
-                      />
+                      <SoftGradient
+                        style={{
+                          height: 170,
+                          padding: 20,
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            letterSpacing: 2,
+                            color: "#84718E",
+                          }}
+                        >
+                          TOGETHER / {album.category}
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "flex-end",
+                            justifyContent: "space-between",
+                            gap: 14,
+                          }}
+                        >
+                          <Text
+                            numberOfLines={2}
+                            style={{
+                              fontSize: 22,
+                              lineHeight: 31,
+                              fontWeight: "400",
+                              color: "#51445F",
+                              flex: 1,
+                            }}
+                          >
+                            {album.title}
+                          </Text>
+                          {!!album.cover && (
+                            <View
+                              style={{
+                                width: 68,
+                                transform: [{ rotate: "6deg" }],
+                                backgroundColor: "#FFFFFFAA",
+                                padding: 4,
+                                borderRadius: 14,
+                              }}
+                            >
+                              <PrivateImage
+                                path={album.cover}
+                                label={album.title}
+                                height={65}
+                              />
+                            </View>
+                          )}
+                        </View>
+                      </SoftGradient>
                       <Label>
                         {album.category} ·{" "}
                         {album.role === "owner" ? "我的相册" : "共同收藏"}
