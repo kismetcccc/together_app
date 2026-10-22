@@ -35,7 +35,15 @@
 - 未连接用户 Expo/EAS 项目、Apple 签名或真机分发凭据，未生成 IPA，也未上架。
 - 未在真机验收权限拒绝/取消、SecureStore 重启恢复、邮件 scheme、系统分享、后台恢复和弱网。请按 SOP 的双账号清单执行。
 - 未部署新 API、未对真实生产 QQ SMTP 发信、未迁移现有用户和相册；线上联通不能以本地 file mailer 测试替代。
-- CI 工作流已提供；本地通过不等于 GitHub Actions 已运行。远端状态以 GitHub Actions 为准。
+- 源码提交 99fc295 已在 GitHub 核验；Actions 首次运行全部通过，结果见下方远端记录。
 - 系统纪念日通知、Universal Links / App Links、账号自助删除及商店隐私材料尚未实现，不在当前核心好友相册内测交付中。
 
 复现环境：Node.js 22、Expo SDK 58、React Native 0.88、React 19.3。命令见 README 和 DEPLOYMENT。
+
+## 远端交付
+
+仓库：https://github.com/kismetcccc/together_app 。源码提交：99fc295d6f129e1f8ea92172d2dc4aef8942257f。
+
+本地最后一次重复原生导出因自动审批服务两次超时未执行；不是编译失败。此前双平台导出已通过，最终文字提示修改后的类型检查与测试通过，GitHub CI 随后已成功完成最终版本 Android/iOS/Web 导出及上传产物，补齐最终源码的构建证据。
+
+GitHub Actions：[运行 39730670032](https://github.com/kismetcccc/together_app/actions/runs/39730670032)，conclusion=success。全新 Ubuntu/Node 22 环境完成 npm ci、依赖安装、全部测试、双平台 JS 导出和产物上传。产物名称 native-js-export-not-installable，不能直接安装到手机。
