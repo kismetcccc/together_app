@@ -34,6 +34,7 @@ import type {
   Snapshot,
   InvitationResult,
 } from "./types";
+import { NavigationIcon } from "./components/NavigationIcon";
 import { AlbumLibrary } from "./components/AlbumLibrary";
 import { AuthScreen } from "./components/AuthScreen";
 import { PrivateImage } from "./components/PrivateImage";
@@ -78,7 +79,7 @@ function Root() {
     [refreshing, setRefreshing] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
-  const [tab, setTab] = useState("相册"),
+  const [tab, setTab] = useState("照片"),
     [selected, setSelected] = useState<string | null>(null),
     [category, setCategory] = useState("全部"),
     [sheet, setSheet] = useState<Sheet | null>(null),
@@ -300,10 +301,10 @@ function Root() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style="dark" />
       <View style={s.topbar}>
-        <Text style={{ fontSize: 21, fontWeight: "600", color: "#191919" }}>
-          {data.user ? tab : "同频"}
+        <Text style={{ fontSize: 22, fontWeight: "400", color: "#3C4043" }}>
+          同频
         </Text>
-        {data.user && tab === "相册" && (
+        {data.user && ["照片", "相册", "共享"].includes(tab) && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="创建相册"
@@ -405,12 +406,17 @@ function Root() {
               </View>
             </View>
           )}
-          {tab === "相册" && !selectedAlbum && (
+          {["照片", "相册", "共享"].includes(tab) && !selectedAlbum && (
             <AlbumLibrary
               albums={data.albums}
               category={category}
               onCategory={setCategory}
-              onAlbum={setSelected}
+              mode={tab}
+              onPhoto={(album, photo) => open({ kind: "photo", album, photo })}
+              onAlbum={(id) => {
+                setSelected(id);
+                setTab("相册");
+              }}
               refreshControl={refreshControl}
             />
           )}
@@ -627,15 +633,15 @@ function Root() {
           <View
             style={{
               flexDirection: "row",
-              paddingHorizontal: 24,
+              paddingHorizontal: 8,
               paddingVertical: 8,
-              gap: 10,
+              gap: 0,
               borderTopWidth: 1,
               borderColor: colors.line,
               backgroundColor: colors.paper,
             }}
           >
-            {["相册", "纪念日", "我的"].map((name, index) => (
+            {["照片", "相册", "共享", "纪念日", "我的"].map((name, index) => (
               <Pressable
                 key={name}
                 accessibilityRole="tab"
@@ -655,17 +661,7 @@ function Root() {
                   gap: 4,
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: 22,
-                    color: tab === name ? colors.ink : colors.muted,
-                    backgroundColor: colors.paper,
-                    paddingHorizontal: 18,
-                    borderRadius: 14,
-                  }}
-                >
-                  {["▧", "♡", "○"][index]}
-                </Text>
+                <NavigationIcon index={index} active={tab === name} />
                 <Text
                   style={{
                     fontSize: 12,

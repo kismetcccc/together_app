@@ -61,3 +61,13 @@ GitHub 推送两次因自动审批服务超时未执行，本次修改已在本�
 - Harrison Steen：https://unsplash.com/photos/d01xcR3puFA
 
 示例通过 images.unsplash.com 直接显示，不下载进仓库；外部图片加载依赖网络。截图：docs/screenshots/polished-library.jpg。
+
+## 2026-10-22 Google Photos 风格二次设计
+
+- [x] 参考 https://www.google.com/photos/about/ 的照片优先、分类与分享结构，保留同频品牌。
+- [x] 首页按日期显示三列真实照片；相册使用两列封面；共享单独筛选有受邀成员的相册。
+- [x] 浅蓝选中导航、原生几何线条图标、轻量搜索栏；移除摄影灵感示例区。
+- [x] 搜索相册标题/描述、照片说明/日期；保留原相册上下文打开照片编辑。
+- [x] npm run verify：后端 13/13，移动端 8/8；Android/iOS/Web Expo 导出通过。
+- [x] 本地浏览器 390×844 检查登录、无搜索结果、共享列表、相册上传/编辑/邀请入口。截图：screenshots/google-style-photos.jpg。
+- 限制：本地测试账号只有一张绿色图标照片，因此真实照片墙未铺满；不注入虚假用户照片。尚未真机验收、未重新发布旧 Sites 网站。

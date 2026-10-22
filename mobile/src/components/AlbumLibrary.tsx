@@ -1,146 +1,112 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  Image,
-  Linking,
-} from "react-native";
-import type { Album } from "../types";
+import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
+import type { Album, Photo } from "../types";
 import { PrivateImage } from "./PrivateImage";
+import { libraryAlbums, libraryPhotos } from "../lib/library";
 import { categories } from "../lib/links";
 
-const inspiration = [
-  {
-    image: "photo-1669604120699-eeba651ac235",
-    label: "清晨的湖与山",
-    author: "ConfinedRiley",
-    page: "https://unsplash.com/photos/mIj8Cn3oNDg",
-    height: 222,
-  },
-  {
-    image: "photo-1761867704719-72b597a619d7",
-    label: "一起走进山野",
-    author: "Kayla Takes Photos",
-    page: "https://unsplash.com/photos/yqp4GmWR2Nw",
-    height: 154,
-  },
-  {
-    image: "photo-1635965072050-9b608060234d",
-    label: "山间的一天",
-    author: "Harrison Steen",
-    page: "https://unsplash.com/photos/d01xcR3puFA",
-    height: 190,
-  },
-];
-function InspirationPhoto({ photo }: { photo: (typeof inspiration)[number] }) {
-  const [failed, setFailed] = useState(false),
-    [attempt, setAttempt] = useState(0);
-  return (
-    <View style={{ gap: 8 }}>
-      {failed ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`重试加载${photo.label}`}
-          onPress={() => {
-            setFailed(false);
-            setAttempt((a) => a + 1);
-          }}
-          style={{
-            height: photo.height,
-            backgroundColor: "#f5f5f5",
-            borderRadius: 12,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: "#777", fontSize: 12 }}>轻点重新加载</Text>
-        </Pressable>
-      ) : (
-        <Image
-          key={attempt}
-          source={{
-            uri: `https://images.unsplash.com/${photo.image}?auto=format&fit=crop&w=640&q=80`,
-          }}
-          accessibilityLabel={photo.label}
-          style={{
-            height: photo.height,
-            width: "100%",
-            borderRadius: 12,
-            backgroundColor: "#f4f4f4",
-          }}
-          resizeMode="cover"
-          onError={() => setFailed(true)}
-        />
-      )}
-      <Text style={{ fontSize: 12, color: "#333" }}>{photo.label}</Text>
-      <Pressable
-        accessibilityRole="link"
-        accessibilityLabel={`在 Unsplash 查看 ${photo.author} 的照片`}
-        onPress={() => {
-          void Linking.openURL(photo.page).catch(() => {});
-        }}
-        style={{ minHeight: 30, justifyContent: "center" }}
-      >
-        <Text numberOfLines={1} style={{ fontSize: 10, color: "#8c8c8c" }}>
-          {photo.author} / Unsplash ↗
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
-function updatedAt(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? ""
-    : `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")} 更新`;
-}
 export function AlbumLibrary({
   albums,
   category,
   onCategory,
   onAlbum,
+  onPhoto,
+  mode = "相册",
   refreshControl,
 }: {
   albums: Album[];
   category: string;
   onCategory: (v: string) => void;
   onAlbum: (id: string) => void;
+  onPhoto: (album: Album, photo: Photo) => void;
+  mode?: string;
   refreshControl: React.ReactElement;
 }) {
-  const [showExamples, setShowExamples] = useState(true);
-  const filtered = albums
-    .filter((a) => category === "全部" || a.category === category)
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const [query, setQuery] = useState("");
+  const [width, setWidth] = useState(390);
+  const shared = mode === "共享";
+  const photosView = mode === "照片";
+  const filtered = libraryAlbums(albums, mode, category, query);
+  const photos = libraryPhotos(albums, query);
+  const dates = [...new Set(photos.map((p) => p.photo.date))];
+  const tile = (width - 8) / 3;
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ paddingBottom: 16, paddingTop: 4 }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+        width: "100%",
+        maxWidth: 720,
+        alignSelf: "center",
+      }}
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+    >
+      <View style={{ paddingHorizontal: 20, paddingBottom: 12 }}>
+        <View
+          style={{
+            backgroundColor: "#F0F4F9",
+            borderRadius: 28,
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 18,
+            gap: 12,
+          }}
+        >
+          <Text style={{ fontSize: 23, color: "#485568" }}>⌕</Text>
+          <TextInput
+            accessibilityLabel="搜索照片或相册"
+            placeholder={photosView ? "搜索照片、日期或相册" : "搜索相册"}
+            placeholderTextColor="#657080"
+            value={query}
+            onChangeText={setQuery}
+            style={{ flex: 1, height: 48, fontSize: 14, color: "#202124" }}
+            clearButtonMode="while-editing"
+          />
+          {!!query && (
+            <Pressable
+              accessibilityLabel="清除搜索"
+              onPress={() => setQuery("")}
+              style={{
+                minWidth: 44,
+                minHeight: 44,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text>×</Text>
+            </Pressable>
+          )}
+        </View>
+      </View>
+      {!photosView && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 22, gap: 8 }}
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 14,
+            gap: 8,
+          }}
         >
           {["全部", ...categories].map((c) => (
             <Pressable
               key={c}
               accessibilityRole="tab"
-              accessibilityLabel={c}
               accessibilityState={{ selected: category === c }}
               onPress={() => onCategory(c)}
               style={{
                 paddingHorizontal: 18,
-                height: 44,
-                borderRadius: 24,
-                backgroundColor: category === c ? "#191919" : "#F5F5F5",
+                minHeight: 44,
+                borderRadius: 12,
                 justifyContent: "center",
+                backgroundColor: category === c ? "#D3E3FD" : "#F4F6F8",
               }}
             >
               <Text
                 style={{
                   fontSize: 13,
-                  color: category === c ? "#fff" : "#777",
-                  fontWeight: category === c ? "500" : "400",
+                  color: category === c ? "#16427C" : "#525C69",
                 }}
               >
                 {c}
@@ -148,138 +114,165 @@ export function AlbumLibrary({
             </Pressable>
           ))}
         </ScrollView>
-      </View>
+      )}
       <ScrollView
         refreshControl={refreshControl}
-        contentContainerStyle={{
-          paddingHorizontal: 22,
-          paddingTop: 4,
-          paddingBottom: 28,
-          width: "100%",
-          maxWidth: 600,
-          alignSelf: "center",
-          gap: 14,
-        }}
+        contentContainerStyle={{ paddingBottom: 28 }}
       >
         <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 2,
-          }}
+          style={{ paddingHorizontal: 22, paddingTop: 12, paddingBottom: 20 }}
         >
-          <Text style={{ fontSize: 13, color: "#777" }}>我的相册</Text>
-          <Text style={{ fontSize: 12, color: "#999" }}>
-            {filtered.length} 本
+          <Text style={{ fontSize: 22, fontWeight: "400", color: "#202124" }}>
+            {photosView ? "照片" : shared ? "一起留下的回忆" : "你的相册"}
+          </Text>
+          <Text style={{ fontSize: 12, color: "#697586", marginTop: 8 }}>
+            {photosView
+              ? `${photos.length} 张照片 · 按拍摄日期排列`
+              : shared
+                ? "打开相册，与好友一起添加和编辑照片"
+                : `${filtered.length} 本相册 · 收藏生活的不同切面`}
           </Text>
         </View>
-        {filtered.map((album) => (
-          <Pressable
-            key={album.id}
-            accessibilityRole="button"
-            accessibilityLabel={`打开相册 ${album.title}`}
-            onPress={() => onAlbum(album.id)}
-            style={({ pressed }) => ({
-              flexDirection: "row",
-              gap: 16,
-              alignItems: "center",
-              padding: 12,
-              borderRadius: 18,
-              backgroundColor: pressed ? "#fafafa" : "#fff",
-              borderWidth: 0.5,
-              borderColor: "#ededed",
-              shadowColor: "#000",
-              shadowOpacity: 0.035,
-              shadowRadius: 8,
-              shadowOffset: { width: 0, height: 3 },
-              elevation: 1,
-            })}
-          >
-            <View style={{ width: 82 }}>
-              <PrivateImage
-                path={album.cover}
-                label={album.title}
-                height={82}
-                radius={12}
-              />
-            </View>
-            <View style={{ flex: 1, gap: 8 }}>
-              <Text
-                numberOfLines={2}
+        {photosView ? (
+          dates.map((date) => (
+            <View key={date} style={{ marginBottom: 20 }}>
+              <View
                 style={{
-                  fontSize: 15,
-                  lineHeight: 22,
-                  fontWeight: "500",
-                  color: "#222",
+                  paddingHorizontal: 22,
+                  paddingVertical: 12,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {album.title}
-              </Text>
-              <Text style={{ fontSize: 12, color: "#777" }}>
-                {album.photos.length} 张照片 ·{" "}
-                {album.members.filter((m) => !m.pending).length} 位成员
-              </Text>
-              <Text style={{ fontSize: 10, color: "#999" }}>
-                {updatedAt(album.updatedAt)}
-              </Text>
+                <Text
+                  style={{ fontSize: 15, fontWeight: "500", color: "#30343B" }}
+                >
+                  {date || "未注明日期"}
+                </Text>
+                <Text style={{ fontSize: 12, color: "#79828F" }}>
+                  {photos.filter((p) => p.photo.date === date).length} 张
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  paddingHorizontal: 2,
+                }}
+              >
+                {photos
+                  .filter((p) => p.photo.date === date)
+                  .map(({ album, photo }) => (
+                    <Pressable
+                      key={`${album.id}:${photo.id}`}
+                      accessibilityRole="button"
+                      accessibilityLabel={`查看照片 ${photo.caption || photo.date}`}
+                      onPress={() => onPhoto(album, photo)}
+                      style={{ width: tile }}
+                    >
+                      <PrivateImage
+                        path={photo.url}
+                        label={photo.caption}
+                        height={tile}
+                        radius={2}
+                      />
+                      {photo.favorite && (
+                        <Text
+                          style={{
+                            position: "absolute",
+                            bottom: 7,
+                            right: 8,
+                            color: "#fff",
+                            fontSize: 17,
+                          }}
+                        >
+                          ♥
+                        </Text>
+                      )}
+                    </Pressable>
+                  ))}
+              </View>
             </View>
-            <Text style={{ fontSize: 20, color: "#b5b5b5" }}>›</Text>
-          </Pressable>
-        ))}
-        {!filtered.length && (
-          <View style={{ paddingVertical: 30, gap: 9 }}>
-            <Text style={{ fontSize: 16, color: "#333" }}>
-              还没有{category === "全部" ? "" : category}相册
-            </Text>
-            <Text style={{ fontSize: 12, color: "#999" }}>
-              轻点右上角 ＋，开始记录。
-            </Text>
+          ))
+        ) : (
+          <View
+            style={{
+              paddingHorizontal: 20,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 16,
+            }}
+          >
+            {filtered.map((album) => (
+              <Pressable
+                key={album.id}
+                accessibilityRole="button"
+                accessibilityLabel={`打开相册 ${album.title}`}
+                onPress={() => onAlbum(album.id)}
+                style={{ width: (width - 56) / 2, marginBottom: 10 }}
+              >
+                <PrivateImage
+                  path={album.cover || album.photos[0]?.url || ""}
+                  label={album.title}
+                  height={(width - 56) / 2}
+                  radius={18}
+                />
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#252930",
+                    marginTop: 12,
+                  }}
+                >
+                  {album.title}
+                </Text>
+                <Text style={{ fontSize: 12, color: "#727C89", marginTop: 5 }}>
+                  {album.photos.length} 张照片
+                  {album.members.length > 1 ? " · 已共享" : ""}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         )}
-        <View
-          style={{
-            marginTop: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text style={{ fontSize: 17, fontWeight: "500", color: "#222" }}>
-            摄影灵感
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setShowExamples((v) => !v)}
-            style={{ minHeight: 44, justifyContent: "center", paddingLeft: 16 }}
-          >
-            <Text style={{ color: "#888", fontSize: 12 }}>
-              {showExamples ? "收起示例" : "展开示例"}
-            </Text>
-          </Pressable>
-        </View>
-        {showExamples && (
-          <>
-            <Text
+        {(photosView ? !photos.length : !filtered.length) && (
+          <View style={{ padding: 36, alignItems: "center", gap: 12 }}>
+            <View
               style={{
-                fontSize: 11,
-                color: "#999",
-                lineHeight: 18,
-                marginTop: -10,
+                width: 72,
+                height: 72,
+                borderRadius: 24,
+                backgroundColor: "#E8F0FE",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Unsplash 照片示例 · 不属于你的相册
-            </Text>
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <View style={{ flex: 1, gap: 16 }}>
-                <InspirationPhoto photo={inspiration[0]} />
-              </View>
-              <View style={{ flex: 1, gap: 16 }}>
-                <InspirationPhoto photo={inspiration[1]} />
-                <InspirationPhoto photo={inspiration[2]} />
-              </View>
+              <Text style={{ fontSize: 32, color: "#41648E" }}>▧</Text>
             </View>
-          </>
+            <Text style={{ fontSize: 17, color: "#30343B" }}>
+              {query
+                ? "没有找到相关内容"
+                : shared
+                  ? "回忆，值得一起收藏"
+                  : "把第一段回忆放进来"}
+            </Text>
+            <Text
+              style={{
+                fontSize: 13,
+                color: "#748091",
+                lineHeight: 22,
+                textAlign: "center",
+              }}
+            >
+              {query
+                ? "试试其他名称、描述或日期。"
+                : shared
+                  ? "在相册中邀请好友，或在“我的”中打开邀请链接。"
+                  : "点击右上角 ＋ 创建相册，再添加你的照片。"}
+            </Text>
+          </View>
         )}
       </ScrollView>
     </View>
