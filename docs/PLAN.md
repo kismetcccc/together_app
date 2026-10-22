@@ -45,3 +45,19 @@ GitHub 推送两次因自动审批服务超时未执行，本次修改已在本�
 按最新反馈替换之前的渐变方案：纯白背景、黑灰文字；顶部仅「照片」与创建相册 +；删除 Banner、装饰封面和渐变组件。首页直接展示有权限访问的真实照片，按原图宽高分为两列 Masonry，4px 间距；底部无边框分类 Tab 使用细下划线。点照片进入所属相册，空相册保留上传入口。
 
 执行：清理旧组件 → 原生照片墙与尺寸回调 → 类型检查 → 回归与导出 → 手机尺寸辅助验收。类型检查和 Web 辅助预览构建已通过；390px 下实际检查分类切换、空状态、照片进入相册、加号打开创建表单通过。完整 npm run verify 与双平台导出连续两次因自动审批服务超时未执行，不能算通过。原账号、图片和共享权限保持原有接口。
+
+### 极简相册精修 · 当前设计
+
+首页明确为相册列表：21px 半粗标题、44px 浅灰圆形创建按钮；顶部可横向滚动的黑白胶囊分类；全宽轻阴影卡片显示真实封面、名称、照片数、成员数与更新时间。底部主导航留在安全区域底部，选中黑色、未选中灰色。
+
+下方展示可收起的 Unsplash 摄影灵感，明确标注为示例，不写入数据库，不替换用户照片，不携带 API 登录凭据。图片失败有重试入口，摄影师署名链接指向原始页面。原生 React Native 实现，未引入 Tailwind/WebView。
+
+验证：npm run verify 通过（13 项后端、6 项客户端），Android/iOS/Web 资源导出通过。390px 预览确认相册卡片及三张真实示例图加载，320px 无横向溢出，收起/展开示例正常。原生真机仍未验收。
+
+照片来源：
+
+- ConfinedRiley：https://unsplash.com/photos/mIj8Cn3oNDg
+- Kayla Takes Photos：https://unsplash.com/photos/yqp4GmWR2Nw
+- Harrison Steen：https://unsplash.com/photos/d01xcR3puFA
+
+示例通过 images.unsplash.com 直接显示，不下载进仓库；外部图片加载依赖网络。截图：docs/screenshots/polished-library.jpg。

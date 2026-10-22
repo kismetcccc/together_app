@@ -34,7 +34,7 @@ import type {
   Snapshot,
   InvitationResult,
 } from "./types";
-import { PhotoWall } from "./components/PhotoWall";
+import { AlbumLibrary } from "./components/AlbumLibrary";
 import { AuthScreen } from "./components/AuthScreen";
 import { PrivateImage } from "./components/PrivateImage";
 import {
@@ -300,8 +300,8 @@ function Root() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style="dark" />
       <View style={s.topbar}>
-        <Text style={{ fontSize: 26, fontWeight: "600", color: "#111" }}>
-          {data.user ? (tab === "相册" ? "照片" : tab) : "同频"}
+        <Text style={{ fontSize: 21, fontWeight: "600", color: "#191919" }}>
+          {data.user ? tab : "同频"}
         </Text>
         {data.user && tab === "相册" && (
           <Pressable
@@ -313,12 +313,14 @@ function Root() {
             style={{
               height: 44,
               width: 44,
+              borderRadius: 22,
+              backgroundColor: "#F4F4F4",
               alignItems: "center",
               justifyContent: "center",
               opacity: busy || !data.user.emailVerified ? 0.4 : 1,
             }}
           >
-            <Text style={{ fontSize: 32, fontWeight: "300", color: "#111" }}>
+            <Text style={{ fontSize: 27, fontWeight: "500", color: "#191919" }}>
               ＋
             </Text>
           </Pressable>
@@ -404,7 +406,7 @@ function Root() {
             </View>
           )}
           {tab === "相册" && !selectedAlbum && (
-            <PhotoWall
+            <AlbumLibrary
               albums={data.albums}
               category={category}
               onCategory={setCategory}
@@ -657,7 +659,7 @@ function Root() {
                   style={{
                     fontSize: 22,
                     color: tab === name ? colors.ink : colors.muted,
-                    backgroundColor: tab === name ? colors.soft : colors.paper,
+                    backgroundColor: colors.paper,
                     paddingHorizontal: 18,
                     borderRadius: 14,
                   }}
@@ -667,8 +669,8 @@ function Root() {
                 <Text
                   style={{
                     fontSize: 12,
-                    color: colors.ink,
-                    fontWeight: tab === name ? "700" : "400",
+                    color: tab === name ? colors.ink : colors.muted,
+                    fontWeight: tab === name ? "500" : "400",
                   }}
                 >
                   {name}
